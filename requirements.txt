@@ -1,0 +1,12 @@
+# Data Science & ML
+pandas>=1.5.0
+scikit-learn>=1.2.0
+numpy>=1.24.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Development tools
+pytest>=7.0.0
+black>=22.0.0
+flake8>=5.0.0

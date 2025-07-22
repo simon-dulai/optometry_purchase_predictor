@@ -9,9 +9,10 @@ from sklearn.preprocessing import StandardScaler
 class Linear:
     def __init__(self):
         self.model = None
+        self.scaler = None
 
     def prepare_lp(self):
-        df = pd.read_csv("realistic_optometry_data_10000.csv", delimiter =  ",")
+        df = pd.read_csv("app/data/realistic_optometry_data_10000.csv", delimiter =  ",")
         df['Employed'] = df.Employed.apply(lambda x: 1 if x == 'Y' else 0)
         df['Benefits'] = df.Benefits.apply(lambda x: 0 if x == 'Y' else 1)
         df['Driver'] = df.Driver.apply(lambda x: 1 if x == 'Y' else 0)
@@ -22,6 +23,10 @@ class Linear:
         y = df['Spent']
         return x,y
 
+    def linear_api_data(self, features):
+        x_new = features
+        return x_new
+
     def train_lp(self, x,y):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
         scaler = StandardScaler()
@@ -30,5 +35,11 @@ class Linear:
         lr = LinearRegression()
         lr.fit(x_train_scaled, y_train)
         self.model = lr
+        self.scaler = scaler
         return self.model, scaler
 
+    def predict_spending(self, features, scaler):
+        # Scale the features first
+        features_scaled = scaler.transform([features])  # Note the [features]
+        prediction = self.model.predict(features_scaled)[0]
+        return prediction

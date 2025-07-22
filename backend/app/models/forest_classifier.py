@@ -9,7 +9,7 @@ class Forest:
 
 
     def prepare_rf(self, data):
-        df = pd.read_csv("realistic_optometry_data_10000.csv", delimiter=",")
+        df = pd.read_csv("app/data/realistic_optometry_data_10000.csv", delimiter=",")
         df['Employed'] = df['Employed'].apply(lambda x: 1 if x == 'Y' else 0)
         df['Benefits'] = df['Benefits'].apply(lambda x: 0 if x == 'Y' else 1)
         df['Driver'] = df['Driver'].apply(lambda x: 1 if x == 'Y' else 0)
@@ -21,6 +21,10 @@ class Forest:
         y = (df['Spent'] >= 100).astype(int)
         return x, y
 
+    def forest_api_data(self, features):
+        x_new = features
+
+        return x_new
 
     def train_rf(self, x, y):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
@@ -31,5 +35,9 @@ class Forest:
         self.model = rf
         return self.model
 
+    def probability_cal(self, data):
+        probability = self.model.predict_proba(data)[0][1]
+        percentage = probability * 100
 
+        return probability, percentage
 

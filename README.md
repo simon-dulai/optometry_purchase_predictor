@@ -32,8 +32,8 @@ optometry-purchase-predictor/
 ## 🚀 Development Phases
 
 - [x] **Phase 1**: Foundation (Week 1) - Project setup and structure
-- [ ] **Phase 2**: Backend API (Weeks 2-5) - FastAPI endpoints
-- [ ] **Phase 3**: Database (Weeks 6-8) - PostgreSQL integration  
+- [x] **Phase 2**: Backend API (Weeks 2-5) - FastAPI endpoints
+- [x] **Phase 3**: Database (Weeks 6-8) - PostgreSQL integration  
 - [ ] **Phase 4**: Frontend (Weeks 9-12) - Web interface
 - [ ] **Phase 5**: Deployment (Weeks 13-16) - Production deployment
 - [ ] **Phase 6**: Polish (Weeks 17-20) - Final improvements

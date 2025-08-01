@@ -1,11 +1,21 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .schemas import PatientInput, PredictionOutput
+
 from .database import Patient, Prediction, create_tables, get_db
 
 
 #& "C:/Users/Ms Pro 7/PycharmProjects/optometry_purchase_predictor/.venv/Scripts/Activate.ps1"
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 from .models import forest_classifier as fc
 from .models import linear_classifier as lc

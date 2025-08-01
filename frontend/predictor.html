@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Optometry Purchase Predictor</title>
+</head>
+<body>
+<form id="prediction-form">
+  <label>Patient ID:</label>
+  <input type="number" name="id" required>
+
+    <label>Age:</label>
+  <input type="number" name="age" required>
+
+    <label>Days since last purchase:</label>
+    <input type="number" name="days_lps" required>
+
+    <label>Employed?:</label>
+    <input type="radio" name="employed" value="yes"> Yes
+    <input type="radio" name="employed" value="no"> No
+
+     <label>Benefits?:</label>
+    <input type="radio" name="benefits" value="yes"> Yes
+    <input type="radio" name="benefits" value="no"> No
+
+    <label>Driver?:</label>
+    <input type="radio" name="driver" value="yes"> Yes
+    <input type="radio" name="driver" value="no"> No
+
+    <label>VDU user?:</label>
+    <input type="radio" name="vdu" value="yes"> Yes
+    <input type="radio" name="vdu" value="no"> No
+
+    <label>Varifocal Wearer?:</label>
+    <input type="radio" name="varifocal" value="yes"> Yes
+    <input type="radio" name="varifocal" value="no"> No
+
+    <label> Rx > +/- 3.50D?:</label>
+    <input type="radio" name="high_rx" value="yes"> Yes
+    <input type="radio" name="high_rx" value="no"> No
+
+    <button type="submit">Get Prediction</button>
+    <div id="results"></div>
+
+</form>
+
+<script>
+document.getElementById('prediction-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Stop the form from refreshing the page
+      // Get form data
+
+    const formData = new FormData(event.target);
+
+    const apiData = {
+        id: parseInt(formData.get('id')),
+        age: parseInt(formData.get('age')),
+        days_lps: parseInt(formData.get('days_lps')),
+        employed: formData.get('employed') === 'yes',
+        benefits: formData.get('benefits') === 'yes',
+        driver: formData.get('driver') === 'yes',
+        vdu: formData.get('vdu') === 'yes',
+        varifocal: formData.get('varifocal') === 'yes',
+        high_rx: formData.get('high_rx') === 'yes'
+    };
+
+    console.log("API Data:", apiData);
+
+    fetch('http://127.0.0.1:8002/predict', {  // <-- Use your exact URL
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(apiData)
+})
+.then(response => response.json())
+.then(result => {
+    console.log("API Response:", result);
+     const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = `
+        <h3>Prediction Results:</h3>
+        <p><strong>Purchase Probability:</strong> ${result.purchase_probability_percent}%</p>
+        <p><strong>Predicted Spend:</strong> £${result.predicted_spend.toFixed(2)}</p>
+    `;
+})
+.catch(error => {
+    console.log("Error:", error);
+});
+
+  });
+</script>
+</body>
+</html>

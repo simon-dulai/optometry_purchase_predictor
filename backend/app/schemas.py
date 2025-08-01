@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class PatientInput(BaseModel):
+    id: int
     age: int
     employed: bool
     benefits: bool

@@ -11,7 +11,7 @@ Base = declarative_base()
 class Patient(Base):
     __tablename__ = "patients"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=False)
     age = Column(Integer, nullable=False)
     days_lps = Column(Integer, nullable=False)
     employed = Column(Boolean, nullable=False)

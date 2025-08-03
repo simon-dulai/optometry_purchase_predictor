@@ -497,11 +497,11 @@
                 const resultsDiv = document.getElementById('results');
                 resultsDiv.innerHTML = `
                     <div class="results-card">
-                        <h2 class="results-title">Neural Analysis Complete</h2>
+                        <h2 class="results-title">PREDICTION</h2>
                         <div class="results-grid">
                             <div class="result-item ${probabilityClass}">
                                 <div class="result-value">${probability.toFixed(1)}%</div>
-                                <div class="result-label">Purchase Probability</div>
+                                <div class="result-label">Purchase > £100</div>
                             </div>
                             <div class="result-item ${spendClass}">
                                 <div class="result-value">£${spend.toFixed(2)}</div>

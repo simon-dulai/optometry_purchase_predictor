@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 # Mount static files for frontend
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+app.mount("/static", StaticFiles(directory="../frontend"), name="static")
 
 
 forest_model = fc.Forest()
@@ -54,7 +54,7 @@ async def startup_event():
 @app.get("/")
 def read_root():
 
-    return FileResponse('frontend/predictor.html')
+    return FileResponse('../frontend/predictor.html')
 
 
 @app.get("/health")

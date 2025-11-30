@@ -1,0 +1,358 @@
+/* src/styles/cyberpunk.css */
+
+/* Cyberpunk Fonts - IMPORT MUST BE FIRST */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Cyberpunk Theme Styles */
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --accent-cyan: #00ffff;
+  --accent-cyan-glow: #00ffff80;
+  --accent-blue: #00d4ff;
+  --accent-purple: #ff00ff;
+  --accent-magenta: #bd00ff;
+  --success: #00ff00;
+  --warning: #ff8800;
+  --error: #ff0000;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #888888;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.cyberpunk-font {
+  font-family: 'Orbitron', monospace;
+}
+
+.cyberpunk-heading {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Cyberpunk Glow Effects */
+.glow-cyan {
+  box-shadow:
+    0 0 10px var(--accent-cyan-glow),
+    0 0 20px var(--accent-cyan-glow),
+    inset 0 0 10px var(--accent-cyan-glow);
+}
+
+.glow-purple {
+  box-shadow:
+    0 0 10px rgba(255, 0, 255, 0.5),
+    0 0 20px rgba(255, 0, 255, 0.3),
+    inset 0 0 10px rgba(255, 0, 255, 0.2);
+}
+
+/* Cyberpunk Inputs */
+.cyberpunk-input {
+  background: rgba(26, 26, 26, 0.8);
+  border: 2px solid var(--accent-cyan);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.cyberpunk-input:focus {
+  box-shadow:
+    0 0 15px var(--accent-cyan-glow),
+    0 0 30px var(--accent-cyan-glow);
+  background: rgba(26, 26, 26, 0.9);
+}
+
+/* Cyberpunk Buttons */
+.cyberpunk-btn {
+  background: linear-gradient(45deg, var(--accent-cyan), var(--accent-blue));
+  border: none;
+  color: var(--bg-primary);
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Rajdhani', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyberpunk-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.cyberpunk-btn:hover::before {
+  left: 100%;
+}
+
+.cyberpunk-btn:hover {
+  box-shadow:
+    0 0 20px var(--accent-cyan-glow),
+    0 0 40px var(--accent-cyan-glow);
+  transform: translateY(-2px);
+}
+
+.cyberpunk-btn-secondary {
+  background: linear-gradient(45deg, var(--accent-purple), var(--accent-magenta));
+}
+
+.cyberpunk-btn-danger {
+  background: linear-gradient(45deg, var(--error), #ff4444);
+}
+
+.cyberpunk-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cyberpunk-btn:disabled:hover::before {
+  left: -100%;
+}
+
+/* Cyberpunk Cards */
+.cyberpunk-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.cyberpunk-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+}
+
+.cyberpunk-card:hover {
+  box-shadow:
+    0 0 20px var(--accent-cyan-glow),
+    inset 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+/* Patient Row Colors */
+.patient-row-high {
+  background: linear-gradient(90deg, rgba(0, 255, 0, 0.1), transparent);
+  border-left: 4px solid var(--success);
+}
+
+.patient-row-medium {
+  background: linear-gradient(90deg, rgba(255, 136, 0, 0.1), transparent);
+  border-left: 4px solid var(--warning);
+}
+
+.patient-row-low {
+  background: linear-gradient(90deg, rgba(255, 0, 0, 0.1), transparent);
+  border-left: 4px solid var(--error);
+}
+
+/* Navigation */
+.navbar {
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--accent-cyan);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Layout */
+.app {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Tables */
+.cyberpunk-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cyberpunk-table th {
+  background: linear-gradient(45deg, var(--accent-cyan), var(--accent-blue));
+  color: var(--bg-primary);
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.cyberpunk-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.cyberpunk-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cyberpunk-table tr:hover {
+  background: rgba(0, 255, 255, 0.05);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+
+/* Loading Spinner */
+.cyberpunk-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid transparent;
+  border-top: 4px solid var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-muted { color: var(--text-muted); }
+
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .navbar {
+    padding: 1rem;
+  }
+
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .cyberpunk-table {
+    font-size: 0.9rem;
+  }
+
+  .cyberpunk-table th,
+  .cyberpunk-table td {
+    padding: 8px 4px;
+  }
+}

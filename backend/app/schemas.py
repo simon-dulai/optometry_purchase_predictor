@@ -108,8 +108,7 @@ class MonthlySalesResponse(BaseModel):
 
 class PastAppointmentResponse(BaseModel):
     """Past appointment data"""
-    id: int
-    patient_id: int
+    id: int  # KEEP THIS
     age: int
     days_lps: int
     employed: bool
@@ -120,12 +119,11 @@ class PastAppointmentResponse(BaseModel):
     high_rx: bool
     appointment_date: datetime
     amount_spent: float
+    predicted_spend: float  # ADD THIS!
     created_at: datetime
 
     class Config:
         from_attributes = True
-
-
 # ============================================
 # LEGACY SCHEMAS (Keep for backward compatibility)
 # ============================================

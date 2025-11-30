@@ -264,7 +264,7 @@ async def upload_past_csv(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Upload past appointments CSV with actual spend amounts"""
+    """Upload past appointments CSV with actual spend amounts and generate predictions"""
 
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
@@ -277,20 +277,46 @@ async def upload_past_csv(
 
         for row in csv_reader:
             # Parse CSV row
+            patient_id = int(row['id'])
+            age = int(row['age'])
+            days_lps = int(row['days_lps'])
+            employed = convert_yn_to_bool(row['employed'])
+            benefits = convert_yn_to_bool(row['benefits'])
+            driver = convert_yn_to_bool(row['driver'])
+            vdu = convert_yn_to_bool(row['vdu'])
+            varifocal = convert_yn_to_bool(row['varifocal'])
+            high_rx = convert_yn_to_bool(row['high_rx'])
+            appointment_date = datetime.fromisoformat(row['appointment_date'])
+            amount_spent = float(row['amount_spent'])
+
+            # Generate prediction for comparison purposes
+            probability, predicted_spend = predict_for_patient(
+                age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
+            )
+
+            # Create past record with both actual and predicted spend
             past_record = Past(
                 user_id=user_id,
-                patient_id=int(row['id']),
-                age=int(row['age']),
-                days_lps=int(row['days_lps']),
-                employed=convert_yn_to_bool(row['employed']),
-                benefits=convert_yn_to_bool(row['benefits']),
-                driver=convert_yn_to_bool(row['driver']),
-                vdu=convert_yn_to_bool(row['vdu']),
-                varifocal=convert_yn_to_bool(row['varifocal']),
-                high_rx=convert_yn_to_bool(row['high_rx']),
-                appointment_date=datetime.fromisoformat(row['appointment_date']),
-                amount_spent=float(row['amount_spent'])
+                patient_id=patient_id,
+                age=age,
+                days_lps=days_lps,
+                employed=employed,
+                benefits=benefits,
+                driver=driver,
+                vdu=vdu,
+                varifocal=varifocal,
+                high_rx=high_rx,
+                appointment_date=appointment_date,
+                amount_spent=amount_spent,
+                predicted_spend=predicted_spend
             )
+
+            print("PAST PREDICTION DEBUG →", {
+                "id": patient_id,
+                "features": [age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx],
+                "predicted_spend": predicted_spend,
+                "probability": probability
+            })
 
             db.add(past_record)
             records_created += 1
@@ -298,13 +324,15 @@ async def upload_past_csv(
         db.commit()
 
         return MessageResponse(
-            message=f"Successfully uploaded {records_created} past appointments",
+            message=f"Successfully uploaded {records_created} past appointments with predictions",
             details={"records": records_created}
         )
 
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error processing CSV: {str(e)}")
+
+
 
 
 # ============================================
@@ -356,6 +384,74 @@ def get_patients_by_date(
 
     return result
 
+
+@app.get("/past", response_model=List[PastAppointmentResponse])
+def get_all_past_appointments(
+        user_id: int = Depends(get_current_user_id),
+        db: Session = Depends(get_db)
+):
+    """Get all past appointments for the current user"""
+
+    past_records = db.query(Past).filter(Past.user_id == user_id).all()
+
+    result = []
+    for record in past_records:
+        result.append({
+            "id": record.patient_id,
+            "age": record.age,
+            "days_lps": record.days_lps,
+            "employed": record.employed,
+            "benefits": record.benefits,
+            "driver": record.driver,
+            "vdu": record.vdu,
+            "varifocal": record.varifocal,
+            "high_rx": record.high_rx,
+            "appointment_date": record.appointment_date,
+            "amount_spent": record.amount_spent,
+            "predicted_spend": record.predicted_spend,  # <-- ADD THIS
+            "created_at": record.created_at
+        })
+
+    return result
+
+
+@app.get("/past/date/{date}", response_model=List[PastAppointmentResponse])
+def get_past_by_date(
+        date: str,
+        user_id: int = Depends(get_current_user_id),
+        db: Session = Depends(get_db)
+):
+    """Get all past appointments for a specific date"""
+
+    try:
+        target_date = datetime.fromisoformat(date).date()
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+
+    past_records = db.query(Past).filter(
+        Past.user_id == user_id,
+        func.date(Past.appointment_date) == target_date
+    ).all()
+
+    result = []
+    for record in past_records:
+        result.append({
+            "id": record.patient_id,
+            "age": record.age,
+            "days_lps": record.days_lps,
+            "employed": record.employed,
+            "benefits": record.benefits,
+            "driver": record.driver,
+            "vdu": record.vdu,
+            "varifocal": record.varifocal,
+            "high_rx": record.high_rx,
+            "appointment_date": record.appointment_date,
+            "amount_spent": record.amount_spent,
+            "predicted_spend": record.predicted_spend,  # <-- ADD THIS
+            "created_at": record.created_at
+        })
+
+    return result
 
 @app.get("/analytics/weekly", response_model=List[WeeklySalesResponse])
 def get_weekly_forecast(

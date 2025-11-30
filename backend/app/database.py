@@ -46,7 +46,7 @@ class Patient(Base):
     high_rx = Column(Boolean, nullable=False)
     appointment_date = Column(DateTime, nullable=False, index=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
+    predicted_spend = Column(Float, nullable=True)  # Add this line to Past model
     # Relationships
     user = relationship("User", back_populates="patients")
     predictions = relationship("Prediction", back_populates="patient", cascade="all, delete-orphan")
@@ -90,6 +90,7 @@ class Past(Base):
     appointment_date = Column(DateTime, nullable=False, index=True)
     amount_spent = Column(Float, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    predicted_spend = Column(Float, nullable=True)  # Add this line to Past model
 
     # Relationship
     user = relationship("User", back_populates="past_appointments")

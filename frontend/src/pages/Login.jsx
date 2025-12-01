@@ -49,9 +49,9 @@ const Login = ({ onLogin }) => {
     }}>
       <div className="cyberpunk-card" style={{ width: '100%', maxWidth: '400px', margin: '20px' }}>
         <h1 className="cyberpunk-font text-center mb-2" style={{ fontSize: '2rem' }}>
-          Optometry Predictor
+          OptoCom
         </h1>
-        <p className="text-center text-muted mb-2">V2.0 - Business Intelligence Dashboard</p>
+        <p className="text-center text-muted mb-2">Sales Prediction Analysis</p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">

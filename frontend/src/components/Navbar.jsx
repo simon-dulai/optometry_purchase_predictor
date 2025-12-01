@@ -5,7 +5,7 @@ const Navbar = ({ user, onLogout }) => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        Optometry Predictor V2.0
+        OptoCom
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <span className="text-muted">Welcome, {user?.practice_name || user?.username}</span>

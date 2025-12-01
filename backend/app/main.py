@@ -210,7 +210,7 @@ async def upload_upcoming_csv(
 
             # Check if patient already exists for this user
             existing = db.query(Patient).filter(
-                Patient.id == patient_id,
+                Patient.patient_id == patient_id,
                 Patient.user_id == user_id
             ).first()
 
@@ -219,7 +219,7 @@ async def upload_upcoming_csv(
 
             # Create patient
             patient = Patient(
-                id=patient_id,
+                patient_id=patient_id,
                 user_id=user_id,
                 age=age,
                 days_lps=days_lps,
@@ -240,8 +240,10 @@ async def upload_upcoming_csv(
                 age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
             )
 
+            db.flush()  # Get the auto-generated id for the patient we just added
+
             prediction = Prediction(
-                patient_id=patient_id,
+                patient_id=patient.id,  # ✅ Use the DB-generated id
                 purchase_probability=probability,
                 predicted_spend=predicted_spend
             )
@@ -690,7 +692,8 @@ def download_demo_upcoming_csv():
             "Content-Disposition": f"attachment; filename={filename}"
         }
     )
-
+#test
+#testgitpush
 
 if __name__ == "__main__":
     import uvicorn

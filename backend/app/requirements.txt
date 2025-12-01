@@ -11,3 +11,4 @@ joblib
 python-dotenv
 pydantic
 email-validator
+PyJWT

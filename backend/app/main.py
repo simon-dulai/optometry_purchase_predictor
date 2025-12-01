@@ -19,10 +19,10 @@ from schemas import (
     PatientResponse, WeeklySalesResponse, MonthlySalesResponse,
     MessageResponse, PastAppointmentResponse
 )
-from .database import Patient, Prediction, User, Past, create_tables, get_db
-from .models import forest_classifier as fc
-from .models import linear_classifier as lc
-from .auth import hash_password, verify_password, create_access_token, get_current_user_id
+from database import Patient, Prediction, User, Past, create_tables, get_db
+from models import forest_classifier as fc
+from models import linear_classifier as lc
+from auth import hash_password, verify_password, create_access_token, get_current_user_id
 
 app = FastAPI(title="Optometry Purchase Predictor V2.0", version="2.0.0")
 

@@ -9,7 +9,7 @@ class Forest:
 
 
     def prepare_rf(self, data):
-        df = pd.read_csv("app/data/realistic_optometry_data_10000.csv", delimiter=",")
+        df = pd.read_csv("data/realistic_optometry_data_10000.csv", delimiter=",")
         df['Employed'] = df['Employed'].apply(lambda x: 1 if x == 'Y' else 0)
         df['Benefits'] = df['Benefits'].apply(lambda x: 0 if x == 'Y' else 1)
         df['Driver'] = df['Driver'].apply(lambda x: 1 if x == 'Y' else 0)

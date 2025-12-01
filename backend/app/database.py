@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
+from pathlib import Path
 
 Base = declarative_base()
 
@@ -14,12 +16,12 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
-
+#testgitpush
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, nullable=False, index=True)
-    email = Column(String, unique=True, nullable=False, index=True)
-    hashed_password = Column(String, nullable=False)
-    practice_name = Column(String, nullable=False)
+    username = Column(String(255), unique=True, nullable=False, index=True)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    practice_name = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
@@ -28,13 +30,14 @@ class User(Base):
 
 
 # ============================================
-# PATIENT TABLE (Updated with user_id and appointment_date)
+# PATIENT TABLE (Upcoming Appointments)
 # ============================================
 
 class Patient(Base):
     __tablename__ = "patients"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=False)
+    id = Column(Integer, primary_key=True, index=True)  # DB auto-increment ID
+    patient_id = Column(Integer, nullable=False, index=True)  # CSV patient ID
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     age = Column(Integer, nullable=False)
     days_lps = Column(Integer, nullable=False)
@@ -45,15 +48,16 @@ class Patient(Base):
     varifocal = Column(Boolean, nullable=False)
     high_rx = Column(Boolean, nullable=False)
     appointment_date = Column(DateTime, nullable=False, index=True)
+    predicted_spend = Column(Float, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    predicted_spend = Column(Float, nullable=True)  # Add this line to Past model
+
     # Relationships
     user = relationship("User", back_populates="patients")
     predictions = relationship("Prediction", back_populates="patient", cascade="all, delete-orphan")
 
 
 # ============================================
-# PREDICTION TABLE (Updated)
+# PREDICTION TABLE
 # ============================================
 
 class Prediction(Base):
@@ -76,9 +80,9 @@ class Prediction(Base):
 class Past(Base):
     __tablename__ = "past"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)  # DB auto-increment ID
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    patient_id = Column(Integer, nullable=False)  # Just stores ID as integer, no FK constraint
+    patient_id = Column(Integer, nullable=False, index=True)  # CSV patient ID
     age = Column(Integer, nullable=False)
     days_lps = Column(Integer, nullable=False)
     employed = Column(Boolean, nullable=False)
@@ -89,8 +93,8 @@ class Past(Base):
     high_rx = Column(Boolean, nullable=False)
     appointment_date = Column(DateTime, nullable=False, index=True)
     amount_spent = Column(Float, nullable=False)
+    predicted_spend = Column(Float, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    predicted_spend = Column(Float, nullable=True)  # Add this line to Past model
 
     # Relationship
     user = relationship("User", back_populates="past_appointments")
@@ -100,29 +104,35 @@ class Past(Base):
 # DATABASE CONNECTION
 # ============================================
 
-import os
-from pathlib import Path
-
 # Get the directory where this database.py file is located
 BASE_DIR = Path(__file__).resolve().parent
 
-# Use PostgreSQL in production (Render), SQLite for local development
+# Use PostgreSQL in production, SQLite for local development
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    # Create SQLite database in the backend directory (where database.py is)
+    # Create SQLite database for local development
     db_path = BASE_DIR / "optometry.db"
     DATABASE_URL = f"sqlite:///{db_path}"
 
-# Render provides DATABASE_URL starting with "postgres://" but SQLAlchemy needs "postgresql://"
+# Handle different PostgreSQL URL formats
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# SQLite needs check_same_thread=False, PostgreSQL doesn't
+# Create engine with appropriate settings
 if DATABASE_URL.startswith("sqlite"):
-    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False}
+    )
 else:
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    # PostgreSQL settings
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -139,3 +149,5 @@ def get_db():
         yield db
     finally:
         db.close()
+
+#test

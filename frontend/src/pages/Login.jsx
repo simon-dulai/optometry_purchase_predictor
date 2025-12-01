@@ -102,9 +102,8 @@ const Login = ({ onLogin }) => {
         </div>
 
         <div className="text-center mt-1">
-          <Link to="/legacy" style={{ color: '#ff00ff', textDecoration: 'none', fontSize: '0.9rem' }}>
-            Use Legacy Predictor
-          </Link>
+          <a href ="/predictor2.html" style={{ color: '#ff00ff', textDecoration: 'none', fontSize: '0.9rem' }}>
+          Use Legacy Predictor </a>
         </div>
       </div>
     </div>

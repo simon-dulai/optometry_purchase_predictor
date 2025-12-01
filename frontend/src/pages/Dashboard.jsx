@@ -11,8 +11,6 @@ const Dashboard = () => {
     <div className="container">
       <CSVUpload />
 
-      <DataSummary />
-
       <ForecastGraph />
 
       <PatientTable />

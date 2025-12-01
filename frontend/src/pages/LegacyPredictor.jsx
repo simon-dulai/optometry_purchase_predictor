@@ -6,7 +6,7 @@ import { api } from '../services/api'
 const LegacyPredictor = () => {
   const [formData, setFormData] = useState({
     age: '',
-    days_lps: '',
+    days_lps: '700',
     employed: false,
     benefits: false,
     driver: false,
@@ -42,7 +42,21 @@ const LegacyPredictor = () => {
       const response = await api.post('/predict', payload)
       setPrediction(response.data)
     } catch (error) {
-      setError(error.response?.data?.detail || 'Prediction failed')
+      console.error('Prediction error:', error.response?.data)
+      // Handle validation errors properly
+      if (error.response?.data?.detail) {
+        if (Array.isArray(error.response.data.detail)) {
+          // Validation error array from FastAPI
+          const errorMsg = error.response.data.detail.map(err => `${err.loc.join('.')}: ${err.msg}`).join('; ')
+          setError(errorMsg)
+        } else if (typeof error.response.data.detail === 'string') {
+          setError(error.response.data.detail)
+        } else {
+          setError('Prediction failed. Please check your inputs.')
+        }
+      } else {
+        setError('Prediction failed. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -74,6 +88,8 @@ const LegacyPredictor = () => {
                   onChange={handleChange}
                   className="cyberpunk-input"
                   required
+                  min="0"
+                  max="120"
                 />
               </div>
 
@@ -86,6 +102,7 @@ const LegacyPredictor = () => {
                   onChange={handleChange}
                   className="cyberpunk-input"
                   required
+                  min="0"
                 />
               </div>
             </div>
@@ -120,7 +137,9 @@ const LegacyPredictor = () => {
           </form>
 
           {error && (
-            <div className="text-error mt-2">{error}</div>
+            <div className="cyberpunk-card mt-2" style={{ background: 'rgba(255, 0, 0, 0.1)', border: '1px solid #ff0000' }}>
+              <div style={{ color: '#ff0000' }}>❌ {error}</div>
+            </div>
           )}
 
           {prediction && (

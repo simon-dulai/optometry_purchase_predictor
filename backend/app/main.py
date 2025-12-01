@@ -9,6 +9,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from fastapi.responses import StreamingResponse
+from .demo_csv_generator import get_demo_past_csv, get_demo_upcoming_csv
+import io
 
 from .schemas import (
     PatientInput, PredictionOutput,
@@ -651,6 +654,42 @@ def legacy_predict(patient: PatientInput, db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
+
+""" DEMO CSV UPDATE """
+
+
+@app.get("/demo/past-csv")
+def download_demo_past_csv():
+    """
+    Download dynamically generated demo CSV for past appointments
+    Always centered around today's date - 2 months of past data
+    """
+    csv_content, filename = get_demo_past_csv()
+
+    return StreamingResponse(
+        io.BytesIO(csv_content.encode('utf-8')),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
+    )
+
+
+@app.get("/demo/upcoming-csv")
+def download_demo_upcoming_csv():
+    """
+    Download dynamically generated demo CSV for upcoming appointments
+    Always centered around today's date - 1 month of future data
+    """
+    csv_content, filename = get_demo_upcoming_csv()
+
+    return StreamingResponse(
+        io.BytesIO(csv_content.encode('utf-8')),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        }
+    )
 
 
 if __name__ == "__main__":

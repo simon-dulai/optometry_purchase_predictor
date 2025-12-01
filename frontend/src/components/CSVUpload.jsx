@@ -1,7 +1,5 @@
-// src/components/CSVUpload.jsx
 import React, { useState } from 'react'
 import { api } from '../services/api'
-import CSVValidator from './CSVValidator'
 
 const CSVUpload = () => {
   const [uploading, setUploading] = useState(false)
@@ -28,6 +26,11 @@ const CSVUpload = () => {
         type: 'success',
         text: response.data.message
       })
+
+      // Reload after successful upload
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     } catch (error) {
       setMessage({
         type: 'error',
@@ -38,138 +41,86 @@ const CSVUpload = () => {
     }
   }
 
-  // Option 1: Download from backend endpoint (if you add the CSV files there)
-  const downloadDemoCSVFromBackend = async (type) => {
-    try {
-      const endpoint = `/demo/csv/${type}`
-      const response = await api.get(endpoint, { responseType: 'blob' })
-
-      const url = window.URL.createObjectURL(new Blob([response.data]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', `demo_${type}.csv`)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: 'Failed to download demo CSV'
-      })
-    }
-  }
-
-  // Option 2: Download from public folder (put CSVs in /public/demo/)
-  const downloadDemoCSVFromPublic = (type) => {
-    try {
-      const link = document.createElement('a')
-      link.href = `/demo/demo_${type}.csv`  // Files should be in /public/demo/
-      link.setAttribute('download', `demo_${type}.csv`)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: 'Failed to download demo CSV'
-      })
-    }
-  }
-
-  // Option 3: Download from external URL (if hosted on GitHub, Google Drive, etc)
-  const downloadDemoCSVFromURL = async (type) => {
-    try {
-      // Replace these URLs with your actual hosted CSV URLs
-      const urls = {
-        upcoming: 'https://your-domain.com/demo_upcoming.csv',
-        past: 'https://your-domain.com/demo_past.csv'
-      }
-
-      const response = await fetch(urls[type])
-      const blob = await response.blob()
-
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', `demo_${type}.csv`)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: 'Failed to download demo CSV'
-      })
-    }
-  }
-
-  // Choose which download method to use
-  const downloadDemoCSV = (type) => {
-    // OPTION 1: If you add CSVs to your backend
-    // downloadDemoCSVFromBackend(type)
-
-    // OPTION 2: If you put CSVs in /public/demo/ folder (RECOMMENDED)
-    downloadDemoCSVFromPublic(type)
-
-    // OPTION 3: If you host CSVs externally
-    // downloadDemoCSVFromURL(type)
-  }
-
   return (
-    <div className="cyberpunk-card">
-      <h3 className="cyberpunk-heading mb-2">CSV Upload</h3>
+    <div>
+      {/* Demo CSV Downloads Section */}
+      <div className="cyberpunk-card mb-2">
+        <h3 className="cyberpunk-heading mb-2"> Demo CSV Files</h3>
+        <p className="text-gray-300 mb-2">
+          CSV files with realistic data centered
+        </p>
 
-      {message.text && (
-        <div className={`text-${message.type} mb-2`}>
-          {message.text}
-        </div>
-      )}
+        <div className="grid grid-2 mb-2">
+          <div className="cyberpunk-card">
+            <h4 className="cyberpunk-heading mb-1">📊 Past Appointments</h4>
+            <p className="text-gray-400 text-sm mb-1">
+              To test upload into 'Past Appointments' Below!
+            </p>
+            <a
+              href="http://localhost:8000/demo/past-csv"
+              download
+              className="cyberpunk-btn cyberpunk-btn-secondary block text-center"
+            >
+              ⬇️ Download Past CSV
+            </a>
+          </div>
 
-      <div className="grid grid-2">
-        <div className="cyberpunk-card">
-          <h4 className="cyberpunk-heading mb-1">Upcoming Appointments</h4>
-          <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '10px' }}>
-            Upload CSV with future appointment dates (no actual_spend column)
-          </p>
-          <CSVValidator
-            type="upcoming"
-            onValidCSV={(file) => handleFileUpload('upcoming', file)}
-          />
-          <button
-            className="cyberpunk-btn"
-            onClick={() => downloadDemoCSV('upcoming')}
-            disabled={uploading}
-            style={{ marginTop: '15px' }}
-          >
-            📥 Download Demo CSV (10k rows)
-          </button>
+          <div className="cyberpunk-card">
+            <h4 className="cyberpunk-heading mb-1">📅 Upcoming Appointments</h4>
+            <p className="text-gray-400 text-sm mb-1">
+              To test upload into 'Upcoming Appointments' Below!
+            </p>
+            <a
+              href="http://localhost:8000/demo/upcoming-csv"
+              download
+              className="cyberpunk-btn block text-center"
+            >
+              ⬇️ Download Upcoming CSV
+            </a>
+          </div>
         </div>
 
-        <div className="cyberpunk-card">
-          <h4 className="cyberpunk-heading mb-1">Past Appointments</h4>
-          <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '10px' }}>
-            Upload CSV with historical dates (includes actual_spend column)
-          </p>
-          <CSVValidator
-            type="past"
-            onValidCSV={(file) => handleFileUpload('past', file)}
-          />
-          <button
-            className="cyberpunk-btn cyberpunk-btn-secondary"
-            onClick={() => downloadDemoCSV('past')}
-            disabled={uploading}
-            style={{ marginTop: '15px' }}
-          >
-            📥 Download Demo CSV (10k rows)
-          </button>
-        </div>
       </div>
 
-      {uploading && <div className="cyberpunk-spinner"></div>}
+      {/* Upload Section */}
+      <div className="cyberpunk-card">
+        <h3 className="cyberpunk-heading mb-2">📤 Upload Your CSV Data</h3>
+
+        {message.text && (
+          <div className={`text-${message.type} mb-2`}>
+            {message.text}
+          </div>
+        )}
+
+        <div className="grid grid-2">
+         <div className="cyberpunk-card">
+            <h4 className="cyberpunk-heading mb-1">Past Appointments</h4>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => handleFileUpload('past', e.target.files[0])}
+              disabled={uploading}
+              className="cyberpunk-input mb-1"
+            />
+          </div>
+
+          <div className="cyberpunk-card">
+            <h4 className="cyberpunk-heading mb-1">Upcoming Appointments</h4>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => handleFileUpload('upcoming', e.target.files[0])}
+              disabled={uploading}
+              className="cyberpunk-input mb-1"
+            />
+          </div>
+        </div>
+
+        {uploading && <div className="cyberpunk-spinner"></div>}
+      </div>
     </div>
   )
 }
 
-export default CSVUpload
+
+export default CSVUpload;

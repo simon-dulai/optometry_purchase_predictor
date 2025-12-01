@@ -26,10 +26,12 @@ from auth import hash_password, verify_password, create_access_token, get_curren
 
 app = FastAPI(title="Optometry Purchase Predictor V2.0", version="2.0.0")
 
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your domain
+    allow_origins=CORS_ORIGINS,  # In production, replace with your domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

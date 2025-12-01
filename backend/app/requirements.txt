@@ -10,3 +10,4 @@ scikit-learn
 joblib
 python-dotenv
 pydantic
+email-validator

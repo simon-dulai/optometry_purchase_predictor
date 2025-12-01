@@ -13,7 +13,7 @@ from fastapi.responses import StreamingResponse
 from demo_csv_generator import get_demo_past_csv, get_demo_upcoming_csv
 import io
 
-from .schemas import (
+from schemas import (
     PatientInput, PredictionOutput,
     UserCreate, UserLogin, Token, UserResponse,
     PatientResponse, WeeklySalesResponse, MonthlySalesResponse,

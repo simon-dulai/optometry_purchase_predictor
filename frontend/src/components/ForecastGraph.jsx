@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,
@@ -149,6 +148,16 @@ const ForecastGraph = () => {
 
   useEffect(() => {
     fetchData()
+  }, [viewMode, selectedDate])
+
+  // Listen for data upload events
+  useEffect(() => {
+    const handleDataUpload = () => {
+      fetchData()
+    }
+    
+    window.addEventListener('dataUploaded', handleDataUpload)
+    return () => window.removeEventListener('dataUploaded', handleDataUpload)
   }, [viewMode, selectedDate])
 
   const hasActualData = () => {
@@ -341,7 +350,7 @@ const ForecastGraph = () => {
     const variance = (dayData.total_actual || 0) - (dayData.total_predicted || 0)
 
     return (
-      <div className="cyberpunk-card">
+      <div id="forecast-graph" className="cyberpunk-card">
         <div style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button className={`cyberpunk-btn ${viewMode === 'daily' ? '' : 'cyberpunk-btn-secondary'}`} onClick={() => setViewMode('daily')}>Daily</button>

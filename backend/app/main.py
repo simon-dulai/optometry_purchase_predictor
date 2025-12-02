@@ -724,6 +724,15 @@ def get_past_by_date(
 
     return past_records
 
+@app.get("/predictor2.html")
+async def serve_predictor():
+    """Serve the legacy predictor HTML"""
+    html_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public", "predictor2.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path)
+    raise HTTPException(status_code=404, detail="Predictor page not found")
+
+
 if __name__ == "__main__":
     import uvicorn
 

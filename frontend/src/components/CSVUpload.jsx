@@ -30,9 +30,14 @@ const CSVUpload = () => {
         text: response.data.message
       })
 
-      // Reload after successful upload
+      // Scroll to forecast graph instead of reloading
       setTimeout(() => {
-        window.location.reload()
+        const forecastGraph = document.getElementById('forecast-graph')
+        if (forecastGraph) {
+          forecastGraph.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+        // Trigger a refetch by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('dataUploaded'))
       }, 1500)
     } catch (error) {
       setMessage({

@@ -9,11 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from fastapi.responses import StreamingResponse
-
 
 from demo_csv_generator import get_demo_past_csv, get_demo_upcoming_csv
-import io
 
 from schemas import (
     PatientInput, PredictionOutput,
@@ -28,13 +25,14 @@ from auth import hash_password, verify_password, create_access_token, get_curren
 
 app = FastAPI(title="Optometry Purchase Predictor V2.0", version="2.0.0")
 
-
-
-
-# CORS configuration
+# CORS configuration - includes localhost for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://optocom.up.railway.app"],
+    allow_origins=[
+        "https://optocom.up.railway.app",
+        "http://localhost:3000",
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -241,8 +239,8 @@ async def upload_upcoming_csv(
 
             prediction = Prediction(
                 patient_id=patient.id,
-                purchase_probability=probability,
-                predicted_spend=predicted_spend
+                purchase_probability=float(probability),
+                predicted_spend=float(predicted_spend)
             )
 
             db.add(prediction)
@@ -310,7 +308,7 @@ async def upload_past_csv(
                 high_rx=high_rx,
                 appointment_date=appointment_date,
                 amount_spent=amount_spent,
-                predicted_spend=predicted_spend
+                predicted_spend=float(predicted_spend)
             )
 
             print("PAST PREDICTION DEBUG →", {

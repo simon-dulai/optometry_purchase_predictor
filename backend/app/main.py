@@ -578,44 +578,6 @@ def clear_user_data(
     )
 
 
-"""
-# DEMO CSV - added pre latest deployment as csv generation now working
-
-@app.get("/demo/csv/upcoming")
-def download_demo_upcoming_csv():
-
-
-    csv_content = """id,age,days_lps,employed,benefits,driver,vdu,varifocal,high_rx,appointment_date
-1001,45,365,Y,N,Y,Y,Y,N,2024-12-05 09:00:00
-1002,32,180,Y,Y,N,Y,N,N,2024-12-05 10:00:00
-1003,58,730,N,N,Y,N,Y,Y,2024-12-05 14:00:00
-1004,41,450,Y,N,Y,Y,Y,N,2024-12-06 09:30:00
-1005,67,90,N,N,Y,N,Y,Y,2024-12-06 11:00:00"""
-
-    return StreamingResponse(
-        io.StringIO(csv_content),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=demo_upcoming.csv"}
-    )
-
-
-@app.get("/demo/csv/past")
-def download_demo_past_csv():
-
-
-    csv_content = """id,age,days_lps,employed,benefits,driver,vdu,varifocal,high_rx,appointment_date,amount_spent
-2001,55,400,Y,N,Y,Y,Y,N,2024-11-15 09:00:00,165.50
-2002,38,200,Y,Y,N,Y,N,N,2024-11-16 10:00:00,45.00
-2003,62,800,N,N,Y,N,Y,Y,2024-11-17 14:00:00,220.75
-2004,44,500,Y,N,Y,Y,Y,N,2024-11-18 09:30:00,135.00
-2005,70,100,N,N,Y,N,Y,Y,2024-11-19 11:00:00,189.25"""
-
-    return StreamingResponse(
-        io.StringIO(csv_content),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=demo_past.csv"}
-    )
-"""
 
 # V1.0 optom purchase predictor -- keep to demo Forest algorithm
 

@@ -191,10 +191,9 @@ async def upload_upcoming_csv(
         contents = await file.read()
         csv_reader = csv.DictReader(io.StringIO(contents.decode('utf-8')))
 
-        patients_created = 0
-        predictions_created = 0
-        batch_size = 100  # Commit every 100 patients
-
+        # Collect all records in memory first
+        patient_records = []
+        
         for row in csv_reader:
             # Parse CSV row
             patient_id = int(row['id'])
@@ -208,50 +207,62 @@ async def upload_upcoming_csv(
             high_rx = convert_yn_to_bool(row['high_rx'])
             appointment_date = datetime.fromisoformat(row['appointment_date'])
 
-            # Create patient
-            patient = Patient(
-                patient_id=patient_id,
-                user_id=user_id,
-                age=age,
-                days_lps=days_lps,
-                employed=employed,
-                benefits=benefits,
-                driver=driver,
-                vdu=vdu,
-                varifocal=varifocal,
-                high_rx=high_rx,
-                appointment_date=appointment_date
-            )
-
-            db.add(patient)
-            patients_created += 1
-
             # ML prediction
             probability, predicted_spend = predict_for_patient(
                 age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
             )
 
-            db.flush()  # auto-generated id for patient
+            patient_records.append({
+                'patient_id': patient_id,
+                'age': age,
+                'days_lps': days_lps,
+                'employed': employed,
+                'benefits': benefits,
+                'driver': driver,
+                'vdu': vdu,
+                'varifocal': varifocal,
+                'high_rx': high_rx,
+                'appointment_date': appointment_date,
+                'probability': float(probability),
+                'predicted_spend': float(predicted_spend)
+            })
 
-            prediction = Prediction(
-                patient_id=patient.id,
-                purchase_probability=float(probability),
-                predicted_spend=float(predicted_spend)
+        # Bulk insert patients
+        for record in patient_records:
+            patient = Patient(
+                patient_id=record['patient_id'],
+                user_id=user_id,
+                age=record['age'],
+                days_lps=record['days_lps'],
+                employed=record['employed'],
+                benefits=record['benefits'],
+                driver=record['driver'],
+                vdu=record['vdu'],
+                varifocal=record['varifocal'],
+                high_rx=record['high_rx'],
+                appointment_date=record['appointment_date']
             )
-
+            db.add(patient)
+        
+        db.flush()  # Get all patient IDs at once
+        
+        # Now add predictions linked to patients
+        patients = db.query(Patient).filter(Patient.user_id == user_id).all()
+        patient_map = {p.patient_id: p.id for p in patients}
+        
+        for record in patient_records:
+            prediction = Prediction(
+                patient_id=patient_map[record['patient_id']],
+                purchase_probability=record['probability'],
+                predicted_spend=record['predicted_spend']
+            )
             db.add(prediction)
-            predictions_created += 1
-
-            # Batch commit to prevent timeout
-            if patients_created % batch_size == 0:
-                db.commit()
-
-        # Final commit for remaining records
+        
         db.commit()
 
         return MessageResponse(
-            message=f"Successfully uploaded {patients_created} patients and generated {predictions_created} predictions",
-            details={"patients": patients_created, "predictions": predictions_created}
+            message=f"Successfully uploaded {len(patient_records)} patients and generated {len(patient_records)} predictions",
+            details={"patients": len(patient_records), "predictions": len(patient_records)}
         )
 
     except Exception as e:
@@ -278,9 +289,9 @@ async def upload_past_csv(
         contents = await file.read()
         csv_reader = csv.DictReader(io.StringIO(contents.decode('utf-8')))
 
-        records_created = 0
-        batch_size = 100  # Commit every 100 records
-
+        # Collect all records in memory first
+        past_records = []
+        
         for row in csv_reader:
             # Parse CSV row
             patient_id = int(row['id'])
@@ -295,7 +306,7 @@ async def upload_past_csv(
             appointment_date = datetime.fromisoformat(row['appointment_date'])
             amount_spent = float(row['amount_spent'])
 
-            # prediction
+            # ML prediction
             probability, predicted_spend = predict_for_patient(
                 age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
             )
@@ -316,20 +327,15 @@ async def upload_past_csv(
                 amount_spent=amount_spent,
                 predicted_spend=float(predicted_spend)
             )
+            past_records.append(past_record)
 
-            db.add(past_record)
-            records_created += 1
-
-            # Batch commit to prevent timeout
-            if records_created % batch_size == 0:
-                db.commit()
-
-        # Final commit for remaining records
+        # Bulk insert all at once
+        db.bulk_save_objects(past_records)
         db.commit()
 
         return MessageResponse(
-            message=f"Successfully uploaded {records_created} past appointments with predictions",
-            details={"records": records_created}
+            message=f"Successfully uploaded {len(past_records)} past appointments with predictions",
+            details={"records": len(past_records)}
         )
 
     except Exception as e:

@@ -735,6 +735,20 @@ async def serve_predictor():
     raise HTTPException(status_code=404, detail="Predictor page not found")
 
 
+@app.get("/debug/check-predictor")
+async def check_predictor():
+    """Debug endpoint to check if predictor2.html exists"""
+    base_dir = os.path.dirname(__file__)
+    predictor_path = os.path.join(base_dir, "predictor2.html")
+
+    return {
+        "base_dir": base_dir,
+        "predictor_path": predictor_path,
+        "exists": os.path.exists(predictor_path),
+        "files_in_dir": os.listdir(base_dir)
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
 

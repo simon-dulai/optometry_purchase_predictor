@@ -5,18 +5,15 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 
-
 function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // token on start
     const token = localStorage.getItem('token')
     console.log('App mounted, token exists:', !!token)
 
     if (token) {
-      // token valid
       verifyToken(token)
     } else {
       setLoading(false)
@@ -36,7 +33,6 @@ function App() {
         const userData = await response.json()
         setUser(userData)
       } else {
-        // invalid token
         localStorage.removeItem('token')
         setUser(null)
       }
@@ -96,7 +92,20 @@ function App() {
               !user ? <Register /> : <Navigate to="/dashboard" replace />
             }
           />
-          
+          <Route
+            path="/dashboard"
+            element={
+              user ? <Dashboard user={user} /> : <Navigate to="/login" replace />
+            }
+          />
+          {/* Default route: redirect to dashboard if logged in, else login */}
+          <Route
+            path="/"
+            element={
+              user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+            }
+          />
+        </Routes>
       </div>
     </Router>
   )

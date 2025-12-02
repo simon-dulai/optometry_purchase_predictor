@@ -189,6 +189,7 @@ async def upload_upcoming_csv(
 
         patients_created = 0
         predictions_created = 0
+        batch_size = 100  # Commit every 100 patients
 
         for row in csv_reader:
             # Parse CSV row
@@ -246,6 +247,11 @@ async def upload_upcoming_csv(
             db.add(prediction)
             predictions_created += 1
 
+            # Batch commit to prevent timeout
+            if patients_created % batch_size == 0:
+                db.commit()
+
+        # Final commit for remaining records
         db.commit()
 
         return MessageResponse(
@@ -274,6 +280,7 @@ async def upload_past_csv(
         csv_reader = csv.DictReader(io.StringIO(contents.decode('utf-8')))
 
         records_created = 0
+        batch_size = 100  # Commit every 100 records
 
         for row in csv_reader:
             # Parse CSV row
@@ -311,16 +318,14 @@ async def upload_past_csv(
                 predicted_spend=float(predicted_spend)
             )
 
-            print("PAST PREDICTION DEBUG →", {
-                "id": patient_id,
-                "features": [age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx],
-                "predicted_spend": predicted_spend,
-                "probability": probability
-            })
-
             db.add(past_record)
             records_created += 1
 
+            # Batch commit to prevent timeout
+            if records_created % batch_size == 0:
+                db.commit()
+
+        # Final commit for remaining records
         db.commit()
 
         return MessageResponse(

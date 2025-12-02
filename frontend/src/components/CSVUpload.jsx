@@ -57,7 +57,7 @@ const CSVUpload = () => {
               To test upload into 'Past Appointments' Below!
             </p>
             <a
-              href="http://localhost:8000/demo/past-csv"
+              href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/demo/past-csv`}
               download
               className="cyberpunk-btn cyberpunk-btn-secondary block text-center"
             >
@@ -71,7 +71,7 @@ const CSVUpload = () => {
               To test upload into 'Upcoming Appointments' Below!
             </p>
             <a
-              href="http://localhost:8000/demo/upcoming-csv"
+              href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/demo/upcoming-csv`}
               download
               className="cyberpunk-btn block text-center"
             >

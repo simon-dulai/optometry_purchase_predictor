@@ -476,7 +476,7 @@
             submitBtn.innerHTML = '⚡ Processing Neural Network...';
             submitBtn.disabled = true;
 
-            fetch(`${API_URL}/predict`, {
+            fetch(`https://optometrypurchasepredictor-production.up.railway.app/predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

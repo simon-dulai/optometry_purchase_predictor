@@ -48,6 +48,16 @@ const PatientTable = () => {
     fetchPatients(selectedDate)
   }, [selectedDate])
 
+  // Listen for data upload events
+  useEffect(() => {
+    const handleDataUpload = () => {
+      fetchPatients(selectedDate)
+    }
+    
+    window.addEventListener('dataUploaded', handleDataUpload)
+    return () => window.removeEventListener('dataUploaded', handleDataUpload)
+  }, [selectedDate])
+
   const getPatientRowClass = (predictedSpend) => {
     if (predictedSpend >= 150) return 'patient-row-high'
     if (predictedSpend >= 80) return 'patient-row-medium'

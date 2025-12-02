@@ -16,12 +16,16 @@ const ClearDataButton = () => {
         text: response.data.message
       })
       setShowModal(false)
+      
+      // Refresh page after successful deletion
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     } catch (error) {
       setMessage({
         type: 'error',
         text: error.response?.data?.detail || 'Failed to clear data'
       })
-    } finally {
       setClearing(false)
     }
   }

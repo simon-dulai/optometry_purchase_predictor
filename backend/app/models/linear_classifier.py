@@ -42,4 +42,4 @@ class Linear:
        
         features_scaled = scaler.transform([features]) 
         prediction = self.model.predict(features_scaled)[0]
-        return prediction
+        return max(0, prediction)  # Prevent negative predictions

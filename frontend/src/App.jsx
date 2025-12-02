@@ -96,20 +96,7 @@ function App() {
               !user ? <Register /> : <Navigate to="/dashboard" replace />
             }
           />
-          <Route path="/legacy" element={<LegacyPredictor />} />
-          <Route
-            path="/dashboard"
-            element={
-              user ? <Dashboard /> : <Navigate to="/login" replace />
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <Navigate to={user ? "/dashboard" : "/login"} replace />
-            }
-          />
-        </Routes>
+          
       </div>
     </Router>
   )

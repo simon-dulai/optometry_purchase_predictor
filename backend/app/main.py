@@ -10,6 +10,8 @@ from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi.responses import StreamingResponse
+
+
 from demo_csv_generator import get_demo_past_csv, get_demo_upcoming_csv
 import io
 
@@ -697,7 +699,7 @@ def download_demo_upcoming_csv():
 #test
 #testgitpush
 
-@app.get("/past/date/{date}", response_model=List[schemas.PastAppointmentResponse])
+@app.get("/past/date/{date}", response_model=List[PastAppointmentResponse])
 def get_past_by_date(
         date: str,
         user_id: int = Depends(get_current_user_id),
@@ -714,11 +716,11 @@ def get_past_by_date(
         func.date(Past.appointment_date) == target_date
     ).all()
 
-    # Calculate predictions for past records if missing
     for record in past_records:
         if not record.predicted_spend or record.predicted_spend == 0:
-            features = prepare_features(record)
-            record.predicted_spend = float(regression_model.predict(features)[0])
+            features = [record.age, record.days_lps, record.employed, record.benefits,
+                        record.driver, record.vdu, record.varifocal, record.high_rx]
+            record.predicted_spend = float(linear_model.predict_spending(features, linear_model.scaler))
 
     return past_records
 

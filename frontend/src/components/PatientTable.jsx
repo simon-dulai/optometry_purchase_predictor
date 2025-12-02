@@ -162,7 +162,6 @@ const PatientTable = () => {
                   <th>High RX</th>
                   <th>Predicted Spend</th>
                   <th>Actual Spend</th>
-                  <th>Purchase Prob</th>
                 </tr>
               </thead>
               <tbody>
@@ -183,7 +182,6 @@ const PatientTable = () => {
                         ? `£${patient.amount_spent.toFixed(2)}`
                         : '-'}
                     </td>
-                    <td>{formatProbability(patient.purchase_probability)}</td>
                   </tr>
                 ))}
                 {patients.length === 0 && (

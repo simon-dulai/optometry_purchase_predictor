@@ -39,7 +39,7 @@ class Linear:
         return self.model, scaler
 
     def predict_spending(self, features, scaler):
-        # Scale the features first
-        features_scaled = scaler.transform([features])  # Note the [features]
+       
+        features_scaled = scaler.transform([features]) 
         prediction = self.model.predict(features_scaled)[0]
         return prediction

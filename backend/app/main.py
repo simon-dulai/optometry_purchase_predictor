@@ -578,6 +578,7 @@ def clear_user_data(
     )
 
 
+"""
 # DEMO CSV - added pre latest deployment as csv generation now working
 
 @app.get("/demo/csv/upcoming")
@@ -614,7 +615,7 @@ def download_demo_past_csv():
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=demo_past.csv"}
     )
-
+"""
 
 # V1.0 optom purchase predictor -- keep to demo Forest algorithm
 

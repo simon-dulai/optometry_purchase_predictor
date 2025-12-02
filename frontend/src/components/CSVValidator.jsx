@@ -1,4 +1,4 @@
-// src/components/CSVValidator.jsx
+//previously used to confirm Data from CSV acceptable
 import React, { useState } from 'react'
 
 const CSVValidator = ({ type, onValidCSV }) => {
@@ -57,7 +57,7 @@ const CSVValidator = ({ type, onValidCSV }) => {
         return
       }
 
-      // Parse header
+
       const header = lines[0].split(',').map(h => h.trim().toLowerCase())
       const expected = expectedColumns[type]
 
@@ -65,7 +65,7 @@ const CSVValidator = ({ type, onValidCSV }) => {
       const missingColumns = expected.filter(col => !header.includes(col))
       const extraColumns = header.filter(col => !expected.includes(col))
 
-      // Parse first 5 data rows for preview
+
       const dataRows = []
       for (let i = 1; i < Math.min(6, lines.length); i++) {
         const values = lines[i].split(',').map(v => v.trim())
@@ -89,7 +89,7 @@ const CSVValidator = ({ type, onValidCSV }) => {
         return
       }
 
-      // Validate data types in first few rows
+
       const errors = []
       dataRows.forEach((row, idx) => {
         // Check date format (accept YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
@@ -97,7 +97,7 @@ const CSVValidator = ({ type, onValidCSV }) => {
           errors.push(`Row ${idx + 2}: appointment_date should be YYYY-MM-DD or YYYY-MM-DD HH:MM:SS format, got "${row.appointment_date}"`)
         }
 
-        // Check numeric fields
+
         const numericFields = ['id', 'age', 'days_lps']
         if (type === 'past') numericFields.push('amount_spent')
 

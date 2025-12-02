@@ -1,4 +1,4 @@
-// src/components/Test.jsx
+// to test if react working
 import React from 'react'
 
 const Test = () => {

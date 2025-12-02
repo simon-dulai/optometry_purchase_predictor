@@ -1,4 +1,4 @@
-// src/components/DataSummary.jsx
+// originally used to display and assess overall data - invalid now
 import React, { useState, useEffect } from 'react'
 import { api } from '../services/api'
 import { format, parseISO } from 'date-fns'
@@ -11,8 +11,7 @@ const DataSummary = () => {
   const fetchSummary = async () => {
     setLoading(true)
     try {
-      // This endpoint might not exist yet, so we'll just fetch all patients
-      // and calculate summary on frontend
+
       const response = await api.get('/patients')
       const allPatients = response.data
 
@@ -22,7 +21,7 @@ const DataSummary = () => {
         return
       }
 
-      // Group by date and calculate stats
+
       const dateGroups = {}
       allPatients.forEach(patient => {
         const date = patient.appointment_date
@@ -42,7 +41,7 @@ const DataSummary = () => {
         }
       })
 
-      // Sort dates
+
       const sortedDates = Object.keys(dateGroups).sort()
       const earliestDate = sortedDates[0]
       const latestDate = sortedDates[sortedDates.length - 1]

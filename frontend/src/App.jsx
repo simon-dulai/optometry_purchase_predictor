@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
@@ -12,12 +11,12 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check for token on app start
+    // token on start
     const token = localStorage.getItem('token')
     console.log('App mounted, token exists:', !!token)
 
     if (token) {
-      // Verify token is valid by calling /me endpoint
+      // token valid
       verifyToken(token)
     } else {
       setLoading(false)
@@ -37,7 +36,7 @@ function App() {
         const userData = await response.json()
         setUser(userData)
       } else {
-        // Token is invalid
+        // invalid token
         localStorage.removeItem('token')
         setUser(null)
       }

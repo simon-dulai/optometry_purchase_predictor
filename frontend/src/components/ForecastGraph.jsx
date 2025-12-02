@@ -1,4 +1,4 @@
-// src/components/ForecastGraph.jsx
+
 import React, { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,
@@ -80,7 +80,7 @@ const ForecastGraph = () => {
       await Promise.all(
         dates.map(async (date) => {
           try {
-            // Fetch upcoming appointments (Patient table)
+            //upcoming patients
             let upcomingPatients = []
             try {
               const upcomingResponse = await api.get(`/patients/date/${date}`)
@@ -90,7 +90,7 @@ const ForecastGraph = () => {
               console.log(`⚠️ No upcoming appointments for ${date}:`, err.message)
             }
 
-            // Fetch past appointments (Past table)
+            // past appointments
             let pastPatients = []
             try {
               const pastResponse = await api.get(`/past/date/${date}`)
@@ -110,7 +110,7 @@ const ForecastGraph = () => {
            const totalActual =
                 pastPatients.reduce((sum, p) => sum + (p.amount_spent || 0), 0);
 
-            // Debug logging
+
             if (allPatients.length > 0) {
               console.log(`Date ${date}:`, {
                 upcoming: upcomingPatients.length,

@@ -1,4 +1,4 @@
-// src/components/MonthlyGraph.jsx
+// original alternative graph - invalid now
 import React, { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,

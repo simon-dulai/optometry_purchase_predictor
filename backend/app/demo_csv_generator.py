@@ -1,8 +1,3 @@
-"""
-Dynamic Demo CSV Generator for Optometry Purchase Predictor
-Generates CSV files on-the-fly that are always centered around TODAY's date
-Import this into main.py to create download endpoints
-"""
 
 import csv
 import random
@@ -12,8 +7,7 @@ from typing import Tuple
 
 
 class DemoCSVGenerator:
-    """Generate realistic optometry appointment CSV data"""
-    
+
     # Configuration
     PATIENTS_PER_DAY = 30
     PAST_DAYS = 60  # 2 months
@@ -21,7 +15,7 @@ class DemoCSVGenerator:
     
     @staticmethod
     def generate_age():
-        """Generate random age based on realistic distribution"""
+        #adults
         rand = random.random()
         if rand < 0.20:  # 20% young adults
             return random.randint(18, 30)
@@ -34,7 +28,7 @@ class DemoCSVGenerator:
     
     @staticmethod
     def generate_purchase_amount():
-        """Generate realistic purchase amount"""
+        #demo purchase amounts
         rand = random.random()
         if rand < 0.15:  # 15% no purchase
             return 0
@@ -49,7 +43,6 @@ class DemoCSVGenerator:
     
     @staticmethod
     def generate_patient_attributes(age):
-        """Generate realistic patient attributes based on age"""
         # Varifocal more common in 45+
         varifocal = age > 45 and random.random() < 0.6
         
@@ -61,10 +54,10 @@ class DemoCSVGenerator:
         else:
             employed = random.random() < 0.15
         
-        # Benefits
+
         benefits = random.random() < 0.35
         
-        # Driver's license
+        # driver
         if age < 18:
             driver = False
         elif age < 70:
@@ -72,10 +65,10 @@ class DemoCSVGenerator:
         else:
             driver = random.random() < 0.60
         
-        # VDU users (computer users)
+
         vdu = employed and random.random() < 0.70
         
-        # High RX (prescription)
+
         high_rx_prob = 0.15 + (age / 100 * 0.15)
         high_rx = random.random() < high_rx_prob
         
@@ -100,12 +93,7 @@ class DemoCSVGenerator:
     
     @classmethod
     def generate_past_csv(cls) -> Tuple[str, str]:
-        """
-        Generate past appointments CSV
-        
-        Returns:
-            Tuple of (csv_content, filename)
-        """
+
         today = datetime.now().date()
         output = io.StringIO()
         
@@ -118,14 +106,13 @@ class DemoCSVGenerator:
         
         for day_offset in range(cls.PAST_DAYS, 0, -1):
             appointment_date = today - timedelta(days=day_offset)
-            
-            # Specsavers runs 7 days a week!
+
             for _ in range(cls.PATIENTS_PER_DAY):
                 age = cls.generate_age()
                 attrs = cls.generate_patient_attributes(age)
                 amount_spent = cls.generate_purchase_amount()
 
-                # Generate appointment time
+                # Generate appointment time 9-5
                 hour = random.randint(9, 17)
                 minute = random.choice([0, 15, 30, 45])
                 appointment_datetime = f"{appointment_date} {hour:02d}:{minute:02d}:00"
@@ -153,12 +140,7 @@ class DemoCSVGenerator:
 
     @classmethod
     def generate_upcoming_csv(cls) -> Tuple[str, str]:
-        """
-        Generate upcoming appointments CSV
 
-        Returns:
-            Tuple of (csv_content, filename)
-        """
         today = datetime.now().date()
         output = io.StringIO()
 
@@ -172,12 +154,12 @@ class DemoCSVGenerator:
         for day_offset in range(cls.FUTURE_DAYS):
             appointment_date = today + timedelta(days=day_offset)
 
-            # Specsavers runs 7 days a week!
+
             for _ in range(cls.PATIENTS_PER_DAY):
                 age = cls.generate_age()
                 attrs = cls.generate_patient_attributes(age)
 
-                # Generate appointment time
+
                 hour = random.randint(9, 17)
                 minute = random.choice([0, 15, 30, 45])
                 appointment_datetime = f"{appointment_date} {hour:02d}:{minute:02d}:00"

@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
@@ -29,7 +28,7 @@ const Login = ({ onLogin }) => {
 
       localStorage.setItem('token', access_token)
 
-      // Get user data
+
       const userResponse = await api.get('/me')
       onLogin(userResponse.data)
 

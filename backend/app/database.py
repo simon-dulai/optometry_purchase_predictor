@@ -10,10 +10,6 @@ from pathlib import Path
 Base = declarative_base()
 
 
-# ============================================
-# USER TABLE
-# ============================================
-
 class User(Base):
     __tablename__ = "users"
 #testgitpush
@@ -24,14 +20,12 @@ class User(Base):
     practice_name = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relationships
+
     patients = relationship("Patient", back_populates="user", cascade="all, delete-orphan")
     past_appointments = relationship("Past", back_populates="user", cascade="all, delete-orphan")
 
 
-# ============================================
-# PATIENT TABLE (Upcoming Appointments)
-# ============================================
+# Patient
 
 class Patient(Base):
     __tablename__ = "patients"
@@ -51,14 +45,11 @@ class Patient(Base):
     predicted_spend = Column(Float, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relationships
     user = relationship("User", back_populates="patients")
     predictions = relationship("Prediction", back_populates="patient", cascade="all, delete-orphan")
 
 
-# ============================================
-# PREDICTION TABLE
-# ============================================
+#Predicitions for calculated spend
 
 class Prediction(Base):
     __tablename__ = "predictions"
@@ -69,13 +60,11 @@ class Prediction(Base):
     predicted_spend = Column(Float, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relationship back to patient
+
     patient = relationship("Patient", back_populates="predictions")
 
 
-# ============================================
-# PAST APPOINTMENTS TABLE
-# ============================================
+# prev px
 
 class Past(Base):
     __tablename__ = "past"
@@ -96,18 +85,16 @@ class Past(Base):
     predicted_spend = Column(Float, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # Relationship
+
     user = relationship("User", back_populates="past_appointments")
 
 
-# ============================================
-# DATABASE CONNECTION
-# ============================================
+
 
 # Get the directory where this database.py file is located
 BASE_DIR = Path(__file__).resolve().parent
 
-# Use PostgreSQL in production, SQLite for local development
+# Use PostgreSQL
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
@@ -115,11 +102,11 @@ if not DATABASE_URL:
     db_path = BASE_DIR / "optometry.db"
     DATABASE_URL = f"sqlite:///{db_path}"
 
-# Handle different PostgreSQL URL formats
+#  PostgreSQL URL formats
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# Create engine with appropriate settings
+
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         DATABASE_URL,
@@ -137,12 +124,12 @@ else:
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-# Create tables
+
 def create_tables():
     Base.metadata.create_all(bind=engine)
 
 
-# Get database session
+
 def get_db():
     db = SessionLocal()
     try:

@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-# JWT Configuration
+# JWT
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60  # 30 days
@@ -16,17 +16,17 @@ security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
-    """Hash a password using SHA-256"""
+
     return hashlib.sha256(password.encode()).hexdigest()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash"""
+
     return hash_password(plain_password) == hashed_password
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create a JWT access token"""
+
     to_encode = data.copy()
 
     if expires_delta:
@@ -41,7 +41,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 def decode_access_token(token: str) -> dict:
-    """Decode and verify a JWT token"""
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
@@ -60,7 +60,7 @@ def decode_access_token(token: str) -> dict:
 
 
 def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(security)) -> int:
-    """Extract and verify user_id from JWT token"""
+
     token = credentials.credentials
     payload = decode_access_token(token)
 

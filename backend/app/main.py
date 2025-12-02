@@ -39,17 +39,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Mount static files for frontend (will be React app)
-# app.mount("/static", StaticFiles(directory="../frontend/build"), name="static")
 
-# Initialize ML models
+
+# ML models
 forest_model = fc.Forest()
 linear_model = lc.Linear()
 
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database and train ML models on startup"""
+
 
     create_tables()
     print("✅ Database tables created")
@@ -71,25 +70,21 @@ async def startup_event():
         print(f"❌ Linear model training failed: {e}")
 
 
-# ============================================
-# HEALTH CHECK
-# ============================================
+
 
 @app.get("/health")
 def health_check():
-    """Health check endpoint"""
+
     return {"status": "healthy", "message": "Optometry Purchase Predictor V2.0 is running"}
 
 
-# ============================================
-# AUTH ENDPOINTS
-# ============================================
+#Auth
 
 @app.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user"""
 
-    # Check if username already exists
+
+    # username exists
     existing_user = db.query(User).filter(User.username == user_data.username).first()
     if existing_user:
         raise HTTPException(
@@ -97,7 +92,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
             detail="Username already registered"
         )
 
-    # Check if email already exists
+    # email  exists
     existing_email = db.query(User).filter(User.email == user_data.email).first()
     if existing_email:
         raise HTTPException(
@@ -105,7 +100,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
 
-    # Create new user
+
     new_user = User(
         username=user_data.username,
         email=user_data.email,
@@ -124,7 +119,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
     """Login and receive JWT token"""
 
-    # Find user
+    # user
     user = db.query(User).filter(User.username == credentials.username).first()
 
     if not user or not verify_password(credentials.password, user.hashed_password):
@@ -134,7 +129,7 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # Create access token
+    # access token
     access_token = create_access_token(data={"user_id": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
@@ -142,7 +137,7 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 
 @app.get("/me", response_model=UserResponse)
 def get_current_user(user_id: int = Depends(get_current_user_id), db: Session = Depends(get_db)):
-    """Get current user info"""
+
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -151,18 +146,16 @@ def get_current_user(user_id: int = Depends(get_current_user_id), db: Session = 
     return user
 
 
-# ============================================
-# CSV UPLOAD ENDPOINTS
-# ============================================
+# csv upload version 2.o
 
 def convert_yn_to_bool(value: str) -> bool:
-    """Convert Y/N string to boolean"""
+    #y/n to bool
     return value.strip().upper() == 'Y'
 
 
 def predict_for_patient(age: int, days_lps: int, employed: bool, benefits: bool,
                         driver: bool, vdu: bool, varifocal: bool, high_rx: bool):
-    """Generate prediction for a patient"""
+
 
     # Convert to model format
     employed_num = 1 if employed else 0
@@ -174,7 +167,7 @@ def predict_for_patient(age: int, days_lps: int, employed: bool, benefits: bool,
 
     features = [age, days_lps, employed_num, benefits_num, driver_num, vdu_num, varifocal_num, high_rx_num]
 
-    # Get predictions
+    # predictions from ML
     probability, percentage = forest_model.probability_cal([features])
     predicted_spend = linear_model.predict_spending(features, linear_model.scaler)
 
@@ -187,7 +180,7 @@ async def upload_upcoming_csv(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Upload upcoming appointments CSV and generate predictions"""
+
 
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
@@ -212,7 +205,7 @@ async def upload_upcoming_csv(
             high_rx = convert_yn_to_bool(row['high_rx'])
             appointment_date = datetime.fromisoformat(row['appointment_date'])
 
-            # Check if patient already exists for this user
+            # if patient already exists for this user
             existing = db.query(Patient).filter(
                 Patient.patient_id == patient_id,
                 Patient.user_id == user_id
@@ -221,7 +214,7 @@ async def upload_upcoming_csv(
             if existing:
                 continue  # Skip duplicates
 
-            # Create patient
+            # Create patient - unique ID
             patient = Patient(
                 patient_id=patient_id,
                 user_id=user_id,
@@ -239,15 +232,15 @@ async def upload_upcoming_csv(
             db.add(patient)
             patients_created += 1
 
-            # Generate prediction
+            # ML prediction
             probability, predicted_spend = predict_for_patient(
                 age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
             )
 
-            db.flush()  # Get the auto-generated id for the patient we just added
+            db.flush()  # auto-generated id for patient
 
             prediction = Prediction(
-                patient_id=patient.id,  # ✅ Use the DB-generated id
+                patient_id=patient.id,
                 purchase_probability=probability,
                 predicted_spend=predicted_spend
             )
@@ -273,7 +266,7 @@ async def upload_past_csv(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Upload past appointments CSV with actual spend amounts and generate predictions"""
+    #csv gnerate predictions
 
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
@@ -298,12 +291,12 @@ async def upload_past_csv(
             appointment_date = datetime.fromisoformat(row['appointment_date'])
             amount_spent = float(row['amount_spent'])
 
-            # Generate prediction for comparison purposes
+            # prediction
             probability, predicted_spend = predict_for_patient(
                 age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
             )
 
-            # Create past record with both actual and predicted spend
+            #both actual and predicted spend
             past_record = Past(
                 user_id=user_id,
                 patient_id=patient_id,
@@ -344,9 +337,7 @@ async def upload_past_csv(
 
 
 
-# ============================================
-# DATA RETRIEVAL ENDPOINTS
-# ============================================
+# retrieve data
 
 @app.get("/patients/date/{date}", response_model=List[PatientResponse])
 def get_patients_by_date(
@@ -354,20 +345,20 @@ def get_patients_by_date(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Get all patients for a specific date with predictions"""
+
 
     try:
         target_date = datetime.fromisoformat(date).date()
     except:
         raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
 
-    # Query patients for this user on this date
+    # query px
     patients = db.query(Patient).filter(
         Patient.user_id == user_id,
         func.date(Patient.appointment_date) == target_date
     ).all()
 
-    # Build response with predictions
+    # c predictions
     result = []
     for patient in patients:
         prediction = db.query(Prediction).filter(
@@ -399,7 +390,7 @@ def get_all_past_appointments(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Get all past appointments for the current user"""
+
 
     past_records = db.query(Past).filter(Past.user_id == user_id).all()
 
@@ -430,7 +421,7 @@ def get_past_by_date(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Get all past appointments for a specific date"""
+    #date spec
 
     try:
         target_date = datetime.fromisoformat(date).date()
@@ -468,7 +459,7 @@ def get_weekly_forecast(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Get weekly sales forecast for 4 weeks starting from start_date"""
+    #week view
 
     try:
         start = datetime.fromisoformat(start_date).date()
@@ -481,7 +472,7 @@ def get_weekly_forecast(
         week_start = start + timedelta(days=week * 7)
         week_end = week_start + timedelta(days=6)
 
-        # Get all patients in this week
+
         patients = db.query(Patient).filter(
             Patient.user_id == user_id,
             func.date(Patient.appointment_date) >= week_start,
@@ -511,7 +502,7 @@ def get_monthly_comparison(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Get monthly actual vs predicted comparison (format: YYYY-MM)"""
+
 
     try:
         year, month_num = month.split('-')
@@ -520,7 +511,7 @@ def get_monthly_comparison(
     except:
         raise HTTPException(status_code=400, detail="Invalid month format. Use YYYY-MM")
 
-    # Get month boundaries
+
     month_start = datetime(year, month_num, 1).date()
     if month_num == 12:
         month_end = datetime(year + 1, 1, 1).date()
@@ -542,7 +533,7 @@ def get_monthly_comparison(
         if prediction:
             total_predicted += prediction.predicted_spend
 
-    # Calculate actual total from past appointments
+    # Calculate actual
     past_records = db.query(Past).filter(
         Past.user_id == user_id,
         func.date(Past.appointment_date) >= month_start,
@@ -551,7 +542,7 @@ def get_monthly_comparison(
 
     total_actual = sum(record.amount_spent for record in past_records)
 
-    variance = total_actual - total_predicted
+    variance = total_actual - total_predicted #comparison
 
     return {
         "month": month,
@@ -561,21 +552,19 @@ def get_monthly_comparison(
     }
 
 
-# ============================================
-# DATA MANAGEMENT ENDPOINTS
-# ============================================
+# clear
 
 @app.delete("/data/clear", response_model=MessageResponse)
 def clear_user_data(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    """Clear all user's patient, prediction, and past appointment data"""
 
-    # Delete all patients (cascade will delete predictions)
+
+    # Delete all
     patients_deleted = db.query(Patient).filter(Patient.user_id == user_id).delete()
 
-    # Delete all past appointments
+
     past_deleted = db.query(Past).filter(Past.user_id == user_id).delete()
 
     db.commit()
@@ -589,13 +578,11 @@ def clear_user_data(
     )
 
 
-# ============================================
-# DEMO/UTILITY ENDPOINTS
-# ============================================
+# DEMO CSV - added pre latest deployment as csv generation now working
 
 @app.get("/demo/csv/upcoming")
 def download_demo_upcoming_csv():
-    """Generate and download a demo upcoming appointments CSV"""
+
 
     csv_content = """id,age,days_lps,employed,benefits,driver,vdu,varifocal,high_rx,appointment_date
 1001,45,365,Y,N,Y,Y,Y,N,2024-12-05 09:00:00
@@ -613,7 +600,7 @@ def download_demo_upcoming_csv():
 
 @app.get("/demo/csv/past")
 def download_demo_past_csv():
-    """Generate and download a demo past appointments CSV"""
+
 
     csv_content = """id,age,days_lps,employed,benefits,driver,vdu,varifocal,high_rx,appointment_date,amount_spent
 2001,55,400,Y,N,Y,Y,Y,N,2024-11-15 09:00:00,165.50
@@ -629,19 +616,17 @@ def download_demo_past_csv():
     )
 
 
-# ============================================
-# LEGACY ENDPOINTS (For backward compatibility)
-# ============================================
+# V1.0 optom purchase predictor -- keep to demo Forest algorithm
 
 @app.get("/")
 def read_root():
-    """Serve legacy predictor or redirect to React app"""
+
     return {"message": "Optometry Purchase Predictor V2.0 API", "version": "2.0.0"}
 
 
 @app.post("/predict", response_model=dict)
 def legacy_predict(patient: PatientInput, db: Session = Depends(get_db)):
-    """Legacy single patient prediction endpoint (no auth required for backward compatibility)"""
+
 
     try:
         # Generate prediction
@@ -661,7 +646,7 @@ def legacy_predict(patient: PatientInput, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
-""" DEMO CSV UPDATE """
+
 
 
 @app.get("/demo/past-csv")
@@ -698,7 +683,7 @@ def download_demo_upcoming_csv():
     )
 #test
 #testgitpush
-
+#added to fix predicted spend on patient table
 @app.get("/past/date/{date}", response_model=List[PastAppointmentResponse])
 def get_past_by_date(
         date: str,
@@ -724,10 +709,10 @@ def get_past_by_date(
 
     return past_records
 
-
+#react app legacy version didn't work - using this for old html version
 @app.get("/predictor2.html")
 async def serve_predictor():
-    """Serve the legacy predictor HTML"""
+
     html_path = os.path.join(os.path.dirname(__file__), "predictor2.html")
     if os.path.exists(html_path):
         return FileResponse(html_path)

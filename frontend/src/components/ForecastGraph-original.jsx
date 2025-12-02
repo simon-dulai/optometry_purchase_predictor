@@ -1,4 +1,4 @@
-// src/components/ForecastGraph.jsx
+// original forecast graph alterantive tables used - invalid now
 import React, { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,

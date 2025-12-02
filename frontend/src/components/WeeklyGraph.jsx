@@ -1,4 +1,4 @@
-// src/components/WeeklyGraph.jsx
+// original usecase for weekly view
 import React, { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,

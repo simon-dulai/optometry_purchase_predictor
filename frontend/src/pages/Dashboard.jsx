@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import React from 'react'
 import CSVUpload from '../components/CSVUpload'
 import PatientTable from '../components/PatientTable'

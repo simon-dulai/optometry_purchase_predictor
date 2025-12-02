@@ -3,9 +3,6 @@ from typing import Optional
 from datetime import datetime
 
 
-# ============================================
-# AUTH SCHEMAS
-# ============================================
 
 class UserCreate(BaseModel):
     username: str
@@ -35,26 +32,23 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
-# ============================================
-# CSV UPLOAD SCHEMAS
-# ============================================
 
 class UpcomingAppointmentCSV(BaseModel):
-    """For bulk uploading upcoming appointments"""
+    #bulk upload
     id: int
     age: int
     days_lps: int
-    employed: str  # "Y" or "N" from CSV
-    benefits: str  # "Y" or "N" from CSV
+    employed: str
+    benefits: str
     driver: str    # "Y" or "N" from CSV
-    vdu: str       # "Y" or "N" from CSV
-    varifocal: str # "Y" or "N" from CSV
-    high_rx: str   # "Y" or "N" from CSV
-    appointment_date: str  # Will be parsed to datetime
+    vdu: str
+    varifocal: str
+    high_rx: str
+    appointment_date: str  # parse datetime
 
 
 class PastAppointmentCSV(BaseModel):
-    """For bulk uploading past appointments with actual spend"""
+
     id: int
     age: int
     days_lps: int
@@ -68,12 +62,8 @@ class PastAppointmentCSV(BaseModel):
     amount_spent: float
 
 
-# ============================================
-# RESPONSE SCHEMAS
-# ============================================
-
 class PatientResponse(BaseModel):
-    """Patient data with prediction for table view"""
+
     id: int
     age: int
     days_lps: int
@@ -93,13 +83,13 @@ class PatientResponse(BaseModel):
 
 
 class WeeklySalesResponse(BaseModel):
-    """Weekly sales forecast"""
+    #no longer used
     date: str  # YYYY-MM-DD format
     total_predicted: float
 
 
 class MonthlySalesResponse(BaseModel):
-    """Monthly actual vs predicted comparison"""
+      #no longer used
     month: str  # YYYY-MM format
     total_predicted: float
     total_actual: float
@@ -107,8 +97,8 @@ class MonthlySalesResponse(BaseModel):
 
 
 class PastAppointmentResponse(BaseModel):
-    """Past appointment data"""
-    id: int  # KEEP THIS
+
+    id: int
     age: int
     days_lps: int
     employed: bool
@@ -124,12 +114,11 @@ class PastAppointmentResponse(BaseModel):
 
     class Config:
         from_attributes = True
-# ============================================
-# LEGACY SCHEMAS (Keep for backward compatibility)
-# ============================================
+
+# legacy schemas
 
 class PatientInput(BaseModel):
-    """Legacy single patient predictor input"""
+
     id: int
     age: int
     employed: bool
@@ -142,16 +131,14 @@ class PatientInput(BaseModel):
 
 
 class PredictionOutput(BaseModel):
-    """Legacy prediction output"""
+
     purchase_probability: float
     predicted_spend: float
 
 
-# ============================================
-# UTILITY SCHEMAS
-# ============================================
+#utility
 
 class MessageResponse(BaseModel):
-    """Generic message response"""
+
     message: str
     details: Optional[dict] = None

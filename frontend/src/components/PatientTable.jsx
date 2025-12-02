@@ -1,4 +1,3 @@
-// src/components/PatientTable.jsx
 import React, { useState, useEffect } from 'react'
 import { format, parseISO, addDays } from 'date-fns'
 import { api } from '../services/api'
@@ -13,7 +12,7 @@ const PatientTable = () => {
   const fetchPatients = async (date) => {
     setLoading(true)
     try {
-      // Fetch upcoming appointments
+      // upcoming appts
       let upcoming = []
       try {
         const upcomingResponse = await api.get(`/patients/date/${date}`)
@@ -22,7 +21,7 @@ const PatientTable = () => {
         console.log('No upcoming appointments for this date')
       }
 
-      // Fetch past appointments
+      // past appts
       let past = []
       try {
         const pastResponse = await api.get(`/past/date/${date}`)
@@ -34,7 +33,7 @@ const PatientTable = () => {
         console.log('No past appointments for this date')
       }
 
-      // Combine both
+      // Combine
       setPatients([...upcoming, ...past])
       setCurrentPage(1) // Reset to first page when date changes
     } catch (error) {

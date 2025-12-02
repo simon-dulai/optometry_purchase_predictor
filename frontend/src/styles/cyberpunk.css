@@ -1,9 +1,8 @@
-/* src/styles/cyberpunk.css */
 
-/* Cyberpunk Fonts - IMPORT MUST BE FIRST */
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Cyberpunk Theme Styles */
+
 :root {
   --bg-primary: #0a0a0a;
   --bg-secondary: #1a1a1a;
@@ -45,7 +44,7 @@ body {
   letter-spacing: 1px;
 }
 
-/* Cyberpunk Glow Effects */
+
 .glow-cyan {
   box-shadow:
     0 0 10px var(--accent-cyan-glow),
@@ -60,7 +59,7 @@ body {
     inset 0 0 10px rgba(255, 0, 255, 0.2);
 }
 
-/* Cyberpunk Inputs */
+
 .cyberpunk-input {
   background: rgba(26, 26, 26, 0.8);
   border: 2px solid var(--accent-cyan);
@@ -80,7 +79,7 @@ body {
   background: rgba(26, 26, 26, 0.9);
 }
 
-/* Cyberpunk Buttons */
+
 .cyberpunk-btn {
   background: linear-gradient(45deg, var(--accent-cyan), var(--accent-blue));
   border: none;
@@ -182,7 +181,7 @@ body {
   border-left: 4px solid var(--error);
 }
 
-/* Navigation */
+
 .navbar {
   background: var(--bg-secondary);
   border-bottom: 2px solid var(--accent-cyan);
@@ -205,7 +204,7 @@ body {
   background-clip: text;
 }
 
-/* Layout */
+
 .app {
   min-height: 100vh;
   background: var(--bg-primary);
@@ -231,7 +230,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-/* Tables */
+
 .cyberpunk-table {
   width: 100%;
   border-collapse: collapse;
@@ -280,7 +279,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Loading Spinner */
+
 .cyberpunk-spinner {
   width: 40px;
   height: 40px;
@@ -296,7 +295,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Modal */
+
 .modal-overlay {
   position: fixed;
   top: 0;

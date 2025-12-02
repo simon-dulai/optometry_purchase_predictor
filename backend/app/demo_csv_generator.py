@@ -27,20 +27,21 @@ class DemoCSVGenerator:
     
     @staticmethod
     def generate_purchase_amount():
-        # Match realistic_optometry_data_10000.csv distribution
-        # Average ~£115, mostly £50-200, very few zeros
+        """
+        Generate amounts that average ~£115 (matching ML predictions)
+        with realistic variance to create interesting over/under performance
+        """
         rand = random.random()
-        
-        if rand < 0.01:  # 1% no purchase (matches training data ~0.94%)
+        if rand < 0.05:  # 5% no purchase
             return 0
-        elif rand < 0.28:  # 27% low range
-            return round(random.uniform(5, 50), 2)
-        elif rand < 0.55:  # 27% mid-low range  
-            return round(random.uniform(51, 100), 2)
-        elif rand < 0.85:  # 30% mid-high range (sweet spot)
-            return round(random.uniform(101, 200), 2)
-        else:  # 15% premium/luxury
-            return round(random.uniform(201, 350), 2)
+        elif rand < 0.30:  # 25% low spenders
+            return round(random.uniform(10, 70), 2)
+        elif rand < 0.65:  # 35% mid-range (sweet spot around prediction)
+            return round(random.uniform(71, 140), 2)
+        elif rand < 0.90:  # 25% higher spenders
+            return round(random.uniform(141, 200), 2)
+        else:  # 10% premium purchases
+            return round(random.uniform(201, 300), 2)
     
     @staticmethod
     def generate_patient_attributes(age):

@@ -1,4 +1,3 @@
-
 import csv
 import random
 import io
@@ -28,18 +27,20 @@ class DemoCSVGenerator:
     
     @staticmethod
     def generate_purchase_amount():
-        #demo purchase amounts
+        # Match realistic_optometry_data_10000.csv distribution
+        # Average ~£115, mostly £50-200, very few zeros
         rand = random.random()
-        if rand < 0.15:  # 15% no purchase
+        
+        if rand < 0.01:  # 1% no purchase (matches training data ~0.94%)
             return 0
-        elif rand < 0.45:  # 30% basic frames
-            return round(random.uniform(25, 75), 2)
-        elif rand < 0.80:  # 35% mid-range
-            return round(random.uniform(76, 150), 2)
-        elif rand < 0.95:  # 15% premium
-            return round(random.uniform(151, 300), 2)
-        else:  # 5% luxury
-            return round(random.uniform(301, 500), 2)
+        elif rand < 0.28:  # 27% low range
+            return round(random.uniform(5, 50), 2)
+        elif rand < 0.55:  # 27% mid-low range  
+            return round(random.uniform(51, 100), 2)
+        elif rand < 0.85:  # 30% mid-high range (sweet spot)
+            return round(random.uniform(101, 200), 2)
+        else:  # 15% premium/luxury
+            return round(random.uniform(201, 350), 2)
     
     @staticmethod
     def generate_patient_attributes(age):

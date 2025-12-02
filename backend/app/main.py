@@ -724,13 +724,23 @@ def get_past_by_date(
 
     return past_records
 
+
 @app.get("/predictor2.html")
 async def serve_predictor():
     """Serve the legacy predictor HTML"""
-    html_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public", "predictor2.html")
-    if os.path.exists(html_path):
-        return FileResponse(html_path)
-    raise HTTPException(status_code=404, detail="Predictor page not found")
+    # Try multiple possible paths
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public", "predictor2.html"),
+        os.path.join(os.path.dirname(__file__), "public", "predictor2.html"),
+        "frontend/public/predictor2.html",
+        "public/predictor2.html"
+    ]
+
+    for html_path in possible_paths:
+        if os.path.exists(html_path):
+            return FileResponse(html_path)
+
+    raise HTTPException(status_code=404, detail=f"Predictor page not found. Tried: {possible_paths}")
 
 
 if __name__ == "__main__":

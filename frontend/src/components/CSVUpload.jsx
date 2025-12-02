@@ -5,6 +5,9 @@ const CSVUpload = () => {
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
 
+  // Ensure base URL never has a trailing slash
+  const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
+
   const handleFileUpload = async (type, file) => {
     if (!file) return
 
@@ -57,7 +60,7 @@ const CSVUpload = () => {
               To test upload into 'Past Appointments' Below!
             </p>
             <a
-              href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/demo/past-csv`}
+              href={`${baseUrl}/demo/past-csv`}
               download
               className="cyberpunk-btn cyberpunk-btn-secondary block text-center"
             >
@@ -71,7 +74,7 @@ const CSVUpload = () => {
               To test upload into 'Upcoming Appointments' Below!
             </p>
             <a
-              href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/demo/upcoming-csv`}
+              href={`${baseUrl}/demo/upcoming-csv`}
               download
               className="cyberpunk-btn block text-center"
             >
@@ -79,7 +82,6 @@ const CSVUpload = () => {
             </a>
           </div>
         </div>
-
       </div>
 
       {/* Upload Section */}
@@ -93,7 +95,7 @@ const CSVUpload = () => {
         )}
 
         <div className="grid grid-2">
-         <div className="cyberpunk-card">
+          <div className="cyberpunk-card">
             <h4 className="cyberpunk-heading mb-1">Past Appointments</h4>
             <input
               type="file"
@@ -122,5 +124,4 @@ const CSVUpload = () => {
   )
 }
 
-
-export default CSVUpload;
+export default CSVUpload

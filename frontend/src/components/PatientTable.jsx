@@ -29,8 +29,6 @@ const PatientTable = () => {
         past = pastResponse.data.map(p => ({
           ...p,
           source: 'past',
-          predicted_spend: 0, // Past records don't have predictions
-          purchase_probability: 0
         }))
       } catch (error) {
         console.log('No past appointments for this date')

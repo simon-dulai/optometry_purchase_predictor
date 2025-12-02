@@ -697,6 +697,31 @@ def download_demo_upcoming_csv():
 #test
 #testgitpush
 
+@app.get("/past/date/{date}", response_model=List[schemas.PastAppointmentResponse])
+def get_past_by_date(
+        date: str,
+        user_id: int = Depends(get_current_user_id),
+        db: Session = Depends(get_db)
+):
+    """Get past appointments for a specific date with predictions"""
+    try:
+        target_date = datetime.fromisoformat(date).date()
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format")
+
+    past_records = db.query(Past).filter(
+        Past.user_id == user_id,
+        func.date(Past.appointment_date) == target_date
+    ).all()
+
+    # Calculate predictions for past records if missing
+    for record in past_records:
+        if not record.predicted_spend or record.predicted_spend == 0:
+            features = prepare_features(record)
+            record.predicted_spend = float(regression_model.predict(features)[0])
+
+    return past_records
+
 if __name__ == "__main__":
     import uvicorn
 

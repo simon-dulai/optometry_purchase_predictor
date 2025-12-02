@@ -26,22 +26,52 @@ class DemoCSVGenerator:
             return random.randint(61, 85)
     
     @staticmethod
-    def generate_purchase_amount():
+    def generate_purchase_amount(age, varifocal, driver, vdu, high_rx, benefits, employed):
         """
-        Generate amounts that average ~£115 (matching ML predictions)
-        with realistic variance to create interesting over/under performance
+        Generate amounts that correlate with ML model features
+        High spenders: varifocal, driver, VDU user, high RX, employed, no benefits
+        Low spenders: opposite of above criteria
+        Includes random outliers for unpredictability
         """
-        rand = random.random()
-        if rand < 0.05:  # 5% no purchase
+        # 10% chance of complete random outlier (unpredictable behavior)
+        if random.random() < 0.10:
+            return round(random.uniform(0, 250), 2)
+        
+        # Lower base amount for more underperformance
+        base = 30
+        
+        # Feature bonuses (matching ML model's learned patterns)
+        if varifocal:
+            base += random.uniform(30, 50)  # Varifocals are expensive
+        if driver:
+            base += random.uniform(15, 30)  # Drivers care about vision quality
+        if vdu:
+            base += random.uniform(20, 35)  # Computer users need good lenses
+        if high_rx:
+            base += random.uniform(25, 45)  # High prescriptions = premium lenses
+        if employed:
+            base += random.uniform(15, 30)  # Employed = more disposable income
+        if not benefits:
+            base += random.uniform(10, 20)  # Not on benefits = can afford more
+            
+        # Age factor (older patients often spend more)
+        if age > 50:
+            base += random.uniform(10, 25)
+        elif age < 30:
+            base -= random.uniform(10, 20)
+            
+        # Add MORE natural variance for unpredictability
+        variance = random.uniform(-25, 35)
+        final_amount = base + variance
+        
+        # 8% chance they just don't buy anything (underperformance)
+        if random.random() < 0.08:
             return 0
-        elif rand < 0.30:  # 25% low spenders
-            return round(random.uniform(10, 70), 2)
-        elif rand < 0.65:  # 35% mid-range (sweet spot around prediction)
-            return round(random.uniform(71, 140), 2)
-        elif rand < 0.90:  # 25% higher spenders
-            return round(random.uniform(141, 200), 2)
-        else:  # 10% premium purchases
-            return round(random.uniform(201, 300), 2)
+            
+        # Clamp to new realistic bounds (£0-200 max)
+        final_amount = max(0, min(final_amount, 200))
+        
+        return round(final_amount, 2)
     
     @staticmethod
     def generate_patient_attributes(age):
@@ -85,12 +115,12 @@ class DemoCSVGenerator:
         return {
             'age': age,
             'days_lps': days_lps,
-            'employed': 'Y' if employed else 'N',
-            'benefits': 'Y' if benefits else 'N',
-            'driver': 'Y' if driver else 'N',
-            'vdu': 'Y' if vdu else 'N',
-            'varifocal': 'Y' if varifocal else 'N',
-            'high_rx': 'Y' if high_rx else 'N',
+            'employed': employed,
+            'benefits': benefits,
+            'driver': driver,
+            'vdu': vdu,
+            'varifocal': varifocal,
+            'high_rx': high_rx,
         }
     
     @classmethod
@@ -112,7 +142,17 @@ class DemoCSVGenerator:
             for _ in range(cls.PATIENTS_PER_DAY):
                 age = cls.generate_age()
                 attrs = cls.generate_patient_attributes(age)
-                amount_spent = cls.generate_purchase_amount()
+                
+                # Generate purchase amount based on patient characteristics
+                amount_spent = cls.generate_purchase_amount(
+                    age=attrs['age'],
+                    varifocal=attrs['varifocal'],
+                    driver=attrs['driver'],
+                    vdu=attrs['vdu'],
+                    high_rx=attrs['high_rx'],
+                    benefits=attrs['benefits'],
+                    employed=attrs['employed']
+                )
 
                 # Generate appointment time 9-5
                 hour = random.randint(9, 17)
@@ -123,12 +163,12 @@ class DemoCSVGenerator:
                     'id': patient_id,
                     'age': age,
                     'days_lps': attrs['days_lps'],
-                    'employed': attrs['employed'],
-                    'benefits': attrs['benefits'],
-                    'driver': attrs['driver'],
-                    'vdu': attrs['vdu'],
-                    'varifocal': attrs['varifocal'],
-                    'high_rx': attrs['high_rx'],
+                    'employed': 'Y' if attrs['employed'] else 'N',
+                    'benefits': 'Y' if attrs['benefits'] else 'N',
+                    'driver': 'Y' if attrs['driver'] else 'N',
+                    'vdu': 'Y' if attrs['vdu'] else 'N',
+                    'varifocal': 'Y' if attrs['varifocal'] else 'N',
+                    'high_rx': 'Y' if attrs['high_rx'] else 'N',
                     'appointment_date': appointment_datetime,
                     'amount_spent': amount_spent,
                 })
@@ -170,12 +210,12 @@ class DemoCSVGenerator:
                     'id': patient_id,
                     'age': age,
                     'days_lps': attrs['days_lps'],
-                    'employed': attrs['employed'],
-                    'benefits': attrs['benefits'],
-                    'driver': attrs['driver'],
-                    'vdu': attrs['vdu'],
-                    'varifocal': attrs['varifocal'],
-                    'high_rx': attrs['high_rx'],
+                    'employed': 'Y' if attrs['employed'] else 'N',
+                    'benefits': 'Y' if attrs['benefits'] else 'N',
+                    'driver': 'Y' if attrs['driver'] else 'N',
+                    'vdu': 'Y' if attrs['vdu'] else 'N',
+                    'varifocal': 'Y' if attrs['varifocal'] else 'N',
+                    'high_rx': 'Y' if attrs['high_rx'] else 'N',
                     'appointment_date': appointment_datetime,
                 })
 

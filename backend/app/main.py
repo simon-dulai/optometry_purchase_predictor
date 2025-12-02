@@ -184,6 +184,10 @@ async def upload_upcoming_csv(
         raise HTTPException(status_code=400, detail="File must be a CSV")
 
     try:
+        # Clear existing upcoming appointments for this user first
+        db.query(Patient).filter(Patient.user_id == user_id).delete()
+        db.commit()
+
         contents = await file.read()
         csv_reader = csv.DictReader(io.StringIO(contents.decode('utf-8')))
 
@@ -204,16 +208,7 @@ async def upload_upcoming_csv(
             high_rx = convert_yn_to_bool(row['high_rx'])
             appointment_date = datetime.fromisoformat(row['appointment_date'])
 
-            # if patient already exists for this user
-            existing = db.query(Patient).filter(
-                Patient.patient_id == patient_id,
-                Patient.user_id == user_id
-            ).first()
-
-            if existing:
-                continue  # Skip duplicates
-
-            # Create patient - unique ID
+            # Create patient
             patient = Patient(
                 patient_id=patient_id,
                 user_id=user_id,
@@ -270,12 +265,16 @@ async def upload_past_csv(
         user_id: int = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
-    #csv gnerate predictions
+    #csv generate predictions
 
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
 
     try:
+        # Clear existing past appointments for this user first
+        db.query(Past).filter(Past.user_id == user_id).delete()
+        db.commit()
+
         contents = await file.read()
         csv_reader = csv.DictReader(io.StringIO(contents.decode('utf-8')))
 
@@ -301,7 +300,7 @@ async def upload_past_csv(
                 age, days_lps, employed, benefits, driver, vdu, varifocal, high_rx
             )
 
-            #both actual and predicted spend
+            # Create past record with both actual and predicted spend
             past_record = Past(
                 user_id=user_id,
                 patient_id=patient_id,

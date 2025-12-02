@@ -102,7 +102,7 @@ const Login = ({ onLogin }) => {
         </div>
 
         <div className="text-center mt-1">
-            <a href="/predictor2.html" style={{ color: '#ff00ff', textDecoration: 'none', fontSize: '0.9rem' }}>
+            <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/predictor2.html`} style={{ color: '#ff00ff', textDecoration: 'none', fontSize: '0.9rem' }}>
             Use Legacy Predictor
             </a>
         </div>
